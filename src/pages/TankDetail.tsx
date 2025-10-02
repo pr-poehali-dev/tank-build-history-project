@@ -3,12 +3,8 @@ import { getTankById } from '@/data/tanks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
-import { ArmorVisualization } from '@/components/ArmorVisualization';
-import { PenetrationAnimation } from '@/components/PenetrationAnimation';
 
 const TankDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,22 +25,17 @@ const TankDetail = () => {
     );
   }
 
-  const maxArmor = 1000;
-  const maxSpeed = 80;
-  const maxPenetration = 800;
-  const maxHorsepower = 1600;
-
   const typeLabels: Record<string, string> = {
-    light: 'Легкий',
-    medium: 'Средний',
-    heavy: 'Тяжелый',
+    light: 'Легкий танк',
+    medium: 'Средний танк',
+    heavy: 'Тяжелый танк',
     'tank-destroyer': 'ПТ-САУ',
     modern: 'ОБТ'
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
         <Link to="/#tanks">
           <Button variant="ghost" className="mb-6">
             <Icon name="ArrowLeft" className="mr-2 h-4 w-4" />
@@ -52,341 +43,275 @@ const TankDetail = () => {
           </Button>
         </Link>
 
-        <div className="grid lg:grid-cols-3 gap-6 mb-6">
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-4xl mb-2">{tank.name}</CardTitle>
-                    <div className="flex gap-2 flex-wrap">
-                      <Badge variant="outline" className="text-lg">{tank.country}</Badge>
-                      <Badge className="text-lg">{tank.year}</Badge>
-                      <Badge variant="secondary" className="text-lg">{typeLabels[tank.type]}</Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          </div>
-
+        <div className="grid gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm text-muted-foreground">Основные характеристики</CardTitle>
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div>
+                  <CardTitle className="text-4xl mb-3">{tank.name}</CardTitle>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="outline" className="text-base">{tank.country}</Badge>
+                    <Badge className="text-base">{tank.year}</Badge>
+                    <Badge variant="secondary" className="text-base">{typeLabels[tank.type]}</Badge>
+                  </div>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm">Вес:</span>
-                <span className="font-bold">{tank.weight} т</span>
+            <CardContent>
+              <div className="relative w-full h-64 md:h-96 mb-6 rounded-lg overflow-hidden">
+                <img 
+                  src={tank.image} 
+                  alt={tank.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Экипаж:</span>
-                <span className="font-bold">{tank.crew} чел.</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Произведено:</span>
-                <span className="font-bold">{tank.produced.toLocaleString()} шт.</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Годы службы:</span>
-                <span className="font-bold text-xs">{tank.inService}</span>
+              
+              <div className="grid md:grid-cols-3 gap-4 mb-6">
+                <div className="text-center p-4 bg-secondary/30 rounded-lg">
+                  <div className="text-2xl font-bold">{tank.weight} т</div>
+                  <div className="text-sm text-muted-foreground">Масса</div>
+                </div>
+                <div className="text-center p-4 bg-secondary/30 rounded-lg">
+                  <div className="text-2xl font-bold">{tank.crew} чел.</div>
+                  <div className="text-sm text-muted-foreground">Экипаж</div>
+                </div>
+                <div className="text-center p-4 bg-secondary/30 rounded-lg">
+                  <div className="text-2xl font-bold">{tank.produced.toLocaleString()}</div>
+                  <div className="text-sm text-muted-foreground">Произведено</div>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        <Tabs defaultValue="armor" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="armor">
-              <Icon name="Shield" className="h-4 w-4 mr-2" />
-              Броня
-            </TabsTrigger>
-            <TabsTrigger value="weapon">
-              <Icon name="Target" className="h-4 w-4 mr-2" />
-              Вооружение
-            </TabsTrigger>
-            <TabsTrigger value="mobility">
-              <Icon name="Gauge" className="h-4 w-4 mr-2" />
-              Подвижность
-            </TabsTrigger>
-            <TabsTrigger value="history">
-              <Icon name="Book" className="h-4 w-4 mr-2" />
-              История
-            </TabsTrigger>
-            <TabsTrigger value="penetration">
-              <Icon name="Crosshair" className="h-4 w-4 mr-2" />
-              Пробитие
-            </TabsTrigger>
-          </TabsList>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="BookOpen" className="h-5 w-5" />
+                История создания
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {tank.history}
+              </p>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="armor" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>3D Схема бронирования</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ArmorVisualization tank={tank} />
-                </CardContent>
-              </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="Crosshair" className="h-5 w-5" />
+                Боевое применение
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {tank.combatUse}
+              </p>
+            </CardContent>
+          </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Толщина брони</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Лоб корпуса</span>
-                      <span className="font-bold">{tank.armorFront} мм</span>
-                    </div>
-                    <Progress value={(tank.armorFront / maxArmor) * 100} className="h-3" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Борт корпуса</span>
-                      <span className="font-bold">{tank.armorSide} мм</span>
-                    </div>
-                    <Progress value={(tank.armorSide / maxArmor) * 100} className="h-3" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Корма корпуса</span>
-                      <span className="font-bold">{tank.armorRear} мм</span>
-                    </div>
-                    <Progress value={(tank.armorRear / maxArmor) * 100} className="h-3" />
-                  </div>
-
-                  <Separator />
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Лоб башни</span>
-                      <span className="font-bold">{tank.armorTurretFront} мм</span>
-                    </div>
-                    <Progress value={(tank.armorTurretFront / maxArmor) * 100} className="h-3" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Борт башни</span>
-                      <span className="font-bold">{tank.armorTurretSide} мм</span>
-                    </div>
-                    <Progress value={(tank.armorTurretSide / maxArmor) * 100} className="h-3" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Крыша</span>
-                      <span className="font-bold">{tank.armorTop} мм</span>
-                    </div>
-                    <Progress value={(tank.armorTop / maxArmor) * 100} className="h-3" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="weapon" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Основное орудие</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Орудие:</span>
-                    <span className="font-bold">{tank.mainGun}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Калибр:</span>
-                    <span className="font-bold">{tank.gunCaliber} мм</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Боекомплект:</span>
-                    <span className="font-bold">{tank.ammunition} снарядов</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Скорострельность:</span>
-                    <span className="font-bold">{tank.rateOfFire} выстр/мин</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Бронепробиваемость</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Пробитие на 500м</span>
-                      <span className="font-bold">{tank.penetration} мм</span>
-                    </div>
-                    <Progress value={(tank.penetration / maxPenetration) * 100} className="h-4" />
-                  </div>
-                  <div className="mt-6 p-4 bg-secondary/30 rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                      {tank.penetration > 600 ? 
-                        'Способно пробить любую современную броню' :
-                        tank.penetration > 400 ?
-                        'Эффективно против большинства целей' :
-                        tank.penetration > 150 ?
-                        'Пробивает средние и легкие танки' :
-                        'Эффективно против легкобронированных целей'
-                      }
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="mobility" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Двигатель и скорость</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Двигатель:</span>
-                    <span className="font-bold text-sm">{tank.engine}</span>
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Мощность:</span>
-                      <span className="font-bold">{tank.horsepower} л.с.</span>
-                    </div>
-                    <Progress value={(tank.horsepower / maxHorsepower) * 100} className="h-3" />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm">Макс. скорость:</span>
-                      <span className="font-bold">{tank.speed} км/ч</span>
-                    </div>
-                    <Progress value={(tank.speed / maxSpeed) * 100} className="h-3" />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Запас хода:</span>
-                    <span className="font-bold">{tank.range} км</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Удельная мощность:</span>
-                    <span className="font-bold">{tank.powerToWeight} л.с./т</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Габариты</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Длина:</span>
-                    <span className="font-bold">{tank.length} м</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Ширина:</span>
-                    <span className="font-bold">{tank.width} м</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Высота:</span>
-                    <span className="font-bold">{tank.height} м</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Экипаж:</span>
-                    <span className="font-bold">{tank.crew} человек</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="history" className="space-y-6">
-            <div className="grid gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>История создания</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">{tank.history}</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Боевое применение</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">{tank.combatUse}</p>
-                </CardContent>
-              </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="Wrench" className="h-5 w-5" />
+                Технические детали
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line mb-6">
+                {tank.technicalDetails}
+              </p>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Icon name="CheckCircle2" className="h-5 w-5 text-green-500" />
-                      Преимущества
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {tank.advantages.map((advantage, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Icon name="Plus" className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm">{advantage}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+                <div>
+                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                    <Icon name="Shield" className="h-5 w-5 text-primary" />
+                    Бронирование
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Лоб корпуса:</span>
+                      <span className="font-bold">{tank.armorFront} мм</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Борт корпуса:</span>
+                      <span className="font-bold">{tank.armorSide} мм</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Корма:</span>
+                      <span className="font-bold">{tank.armorRear} мм</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between">
+                      <span>Лоб башни:</span>
+                      <span className="font-bold">{tank.armorTurretFront} мм</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Борт башни:</span>
+                      <span className="font-bold">{tank.armorTurretSide} мм</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Крыша:</span>
+                      <span className="font-bold">{tank.armorTop} мм</span>
+                    </div>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Icon name="XCircle" className="h-5 w-5 text-red-500" />
-                      Недостатки
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {tank.disadvantages.map((disadvantage, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Icon name="Minus" className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm">{disadvantage}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+                <div>
+                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                    <Icon name="Target" className="h-5 w-5 text-primary" />
+                    Вооружение
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Орудие:</span>
+                      <span className="font-bold text-xs">{tank.mainGun}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Калибр:</span>
+                      <span className="font-bold">{tank.gunCaliber} мм</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Пробитие (500м):</span>
+                      <span className="font-bold">{tank.penetration} мм</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Скорострельность:</span>
+                      <span className="font-bold">{tank.rateOfFire} выстр/мин</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Боекомплект:</span>
+                      <span className="font-bold">{tank.ammunition} снарядов</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                    <Icon name="Gauge" className="h-5 w-5 text-primary" />
+                    Подвижность
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Двигатель:</span>
+                      <span className="font-bold text-xs">{tank.engine}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Мощность:</span>
+                      <span className="font-bold">{tank.horsepower} л.с.</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Скорость:</span>
+                      <span className="font-bold">{tank.speed} км/ч</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Запас хода:</span>
+                      <span className="font-bold">{tank.range} км</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Удельная мощность:</span>
+                      <span className="font-bold">{tank.powerToWeight} л.с./т</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                    <Icon name="Ruler" className="h-5 w-5 text-primary" />
+                    Габариты
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Длина:</span>
+                      <span className="font-bold">{tank.length} м</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Ширина:</span>
+                      <span className="font-bold">{tank.width} м</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Высота:</span>
+                      <span className="font-bold">{tank.height} м</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Период службы:</span>
+                      <span className="font-bold text-xs">{tank.inService}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </TabsContent>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="penetration">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="GitBranch" className="h-5 w-5" />
+                Модификации
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {tank.modifications}
+              </p>
+            </CardContent>
+          </Card>
+
+          <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Анимация пробития брони</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="CheckCircle2" className="h-5 w-5 text-green-500" />
+                  Преимущества
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <PenetrationAnimation tank={tank} />
+                <ul className="space-y-2">
+                  {tank.advantages.map((advantage, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <Icon name="Plus" className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{advantage}</span>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
 
-        <div className="mt-8 flex justify-center">
-          <Link to="/compare">
-            <Button size="lg" className="gap-2">
-              <Icon name="ArrowLeftRight" className="h-5 w-5" />
-              Сравнить с другими танками
-            </Button>
-          </Link>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="XCircle" className="h-5 w-5 text-red-500" />
+                  Недостатки
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {tank.disadvantages.map((disadvantage, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <Icon name="Minus" className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{disadvantage}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex gap-4 justify-center mt-4">
+            <Link to="/compare">
+              <Button size="lg" className="gap-2">
+                <Icon name="ArrowLeftRight" className="h-5 w-5" />
+                Сравнить с другими танками
+              </Button>
+            </Link>
+            <Link to="/#tanks">
+              <Button size="lg" variant="outline" className="gap-2">
+                <Icon name="List" className="h-5 w-5" />
+                Все танки
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

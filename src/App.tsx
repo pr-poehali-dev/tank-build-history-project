@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import TankDetail from "./pages/TankDetail";
 import TankComparison from "./pages/TankComparison";
+import Content from "./pages/Content";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/tank/:id" element={<TankDetail />} />
           <Route path="/compare" element={<TankComparison />} />
+          <Route path="/content" element={<Content />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
